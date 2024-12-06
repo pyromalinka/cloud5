@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    command: pytest
+    depends_on:
+      - db
+      - redis
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: flask_db
+  redis:
+    image: redis:alpine
