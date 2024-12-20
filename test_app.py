@@ -8,22 +8,22 @@ def client():
 
 def test_home_page(client):
     response = client.get('/')
-    assert response.status_code == 200 
-    assert b'Welcome!' in response.data 
+    assert response.status_code == 200
+    json_data = response.get_json()
+    assert 'message' in json_data
+    assert json_data['message'].startswith('Welcome from')
     
-# Тест маршрута /data с кэшированием
 def test_data_page(client):
     response = client.get('/data')
     assert response.status_code == 200
-    assert b'This is some data!' in response.data
+    json_data = response.get_json()
+    assert json_data == {'data': 'This is some data!'}
 
-# Тест кэширования
 def test_cache(client):
     response1 = client.get('/data')
     response2 = client.get('/data')
-    assert response1.data == response2.data  # Данные должны быть одинаковыми, так как они кэшируются
+    assert response1.get_json() == response2.get_json()
 
-# Тест ошибки 404
 def test_404(client):
     response = client.get('/nonexistent')
     assert response.status_code == 404
