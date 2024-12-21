@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     expose:
       - "5000"
     environment:
@@ -12,10 +10,9 @@ services:
       - REDIS_HOST=redis
     deploy:
       replicas: 3
-      restart_policy:
-        condition: on-failure
-    command: >
-      sh -c "INSTANCE_ID=$(hostname) flask run --host=0.0.0.0"
+    depends_on:
+      - db
+      - redis
 
   nginx:
     image: nginx:latest
@@ -41,6 +38,7 @@ services:
     image: redis:6.0
     ports:
       - "6379:6379"
+    command: redis-server --appendonly no
 
 volumes:
   postgres_data:
